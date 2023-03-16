@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from loginform import LoginForm
 from data import db_session
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "my mega secret key"
 

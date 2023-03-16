@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Вам необходимо авторизоваться</h1>
+<h1>Войти в систему <i class="bi bi-person-check-fill"></i></h1>
 <form action="" method="post" novalidate>
     {{ form.hidden_tag() }}
     <p>
@@ -21,6 +21,16 @@
         {{ mess }}
     </div>
     {% endfor %}
-    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary" ) }}</p>
 </form>
 {% endblock %}
+
+
+<div class="form-floating mb-3">
+    <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+    <label for="floatingInput">Адрес электронной почты</label>
+  </div>
+  <div class="form-floating">
+    <input type="password" class="form-control" id="floatingPassword" placeholder="Пароль">
+    <label for="floatingPassword">Пароль</label>
+  </div>
