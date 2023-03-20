@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if current_user.is_authenticated %}
+        <h1>Функционал</h1>
+       
+        {% if current_user.admin %}
+        <div class="d-flex justify-content-end">
+            <form action="register">
+                <button type="submit" class="btn btn-outline-primary">Добавить нового пользователя</button>
+            </form>
+        </div>
+        <br>
+        {% endif %}
+
+        <div class="accordion" id="accordionPanelsStayOpenExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="panelsStayOpen-headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                        Добавить новое мероприятие:
+                    </button>
+                </h2>
+                <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+                <div class="accordion-body">
+                    
+                    <form action="" method="post" novalidate>
+                        {{ form.hidden_tag() }}
+                        <p>
+                            {{ form.title.label }}<br>
+                            {{ form.title(class="form-control") }}<br>
+                        </p>
+
+                        <p>
+                            {{ form.date_start.label }}<br>
+                            {{ form.date_start(class="form-control") }}<br>
+                        </p>
+                        <p>
+                            {{ form.date_end.label }}<br>
+                            {{ form.date_end(class="form-control") }}<br>
+                        </p>
+
+                        <p>
+                            {{ form.type_event.label }}<br>
+                            {{ form.type_event(class="form-control") }}<br>
+                        </p>
+                        <p>
+                            {{ form.members.label }}<br>
+                            {{ form.members(class="form-control") }}<br>
+                        </p>
+                        <p>
+                            {{ form.content.label }}<br>
+                            {{ form.content(class="form-control") }}<br>
+
+                        </p>
+                        {% for mess in get_flashed_messages() %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ mess }}
+                        </div>
+                        {% endfor %}
+                        <br>
+
+                        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+                    </form>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="panelsStayOpen-headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+                        Просмотр своих мероприятий:
+                    </button>
+                </h2>
+                <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwo">
+                    <div class="accordion-body">
+                    
+                    {% for item in current_user.events%}
+                    <div class="card" style="width: 100%;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{item.title}}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted"><i class="bi bi-box"></i> {{item.type_event.capitalize()}} -
+                                <i class="bi bi-calendar3"></i> Дата: {{item.start_date.strftime("%d.%m.%Y г.")}} -
+                                <i class="bi bi-people-fill"></i> Участники: {{item.members}} чел.</h6>
+                            <div class="card-body">{{item.content}}</div>
+                            <p class="card-text"><i class="bi bi-chat-right-text"></i> Преподаватель - {{item.user.name}}</p>
+                        </div>
+                    </div>
+                    <br>
+                    {% endfor %}
+
+                  </div>
+                </div>
+            </div>
+
+            {% else %}
+        <h2>Информация не доступна (Вы не авторизованы)</h2>
+        <h2><a class="navbar-brand" href="sign_in">... перейти на страницу авторизации ></a></h2>
+    {% endif %}
+{% endblock %}

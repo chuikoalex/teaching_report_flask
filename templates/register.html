@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Регистрация пользователя</h1>
+    {% if current_user.admin %}
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.name.label }}
+                {{ form.name(class="form-control") }}<br>
+            </p>
+            <p>
+                {{ form.login.label }}
+                {{ form.login(class="form-control") }}<br>
+            </p>
+            <p>
+                {{ form.email.label }}<br>
+                {{ form.email(class="form-control", type="email") }}<br>
+            </p>
+            <br>
+            <p>
+                {{ form.password.label }}<br>
+                {{ form.password(class="form-control", type="password") }}<br>
+            </p>
+            <p>
+                {{ form.password_again.label }}<br>
+                {{ form.password_again(class="form-control", type="password") }}<br>
+            </p>
+            {% for mess in get_flashed_messages() %}
+                {% if mess == "oK"%}
+                    <div class="alert alert-success" role="alert">
+                        {{ mess }}
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ mess }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <br>
+            <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+        </form>
+
+    {% else %}
+        <h2>Информация не доступна</h2>
+    {% endif %}
+{% endblock %}

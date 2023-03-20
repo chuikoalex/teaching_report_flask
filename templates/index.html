@@ -5,13 +5,13 @@
     {% for item in events%}
     <div class="card" style="width: 100%;">
         <div class="card-body">
-        <h5 class="card-title">{{item.title}}</h5>
-        <h6 class="card-subtitle mb-2 text-muted"><i class="bi bi-box"></i> {{item.type_event.capitalize()}} -
-            <i class="bi bi-calendar3"></i> Дата: {{item.start_date.strftime("%d.%m.%Y г.")}} -
-            <i class="bi bi-people-fill"></i> Участники: {{item.members}} чел.</h6>
-        <div class="card-body">{{item.content}}</div>
-        <p class="card-text"><i class="bi bi-chat-right-text"></i> Преподаватель - {{item.user.name}}</p>
-    </div>
+            <h5 class="card-title">{{item.title}}</h5>
+            <h6 class="card-subtitle mb-2 text-muted"><i class="bi bi-box"></i> {{item.type_event.capitalize()}} -
+                <i class="bi bi-calendar3"></i> Дата: {{item.start_date.strftime("%d.%m.%Y г.")}} -
+                <i class="bi bi-people-fill"></i> Участники: {{item.members}} чел.</h6>
+            <div class="card-body">{{item.content}}</div>
+            <p class="card-text"><i class="bi bi-chat-right-text"></i> Преподаватель - {{item.user.name}}</p>
+        </div>
     </div>
     <br>
     {% endfor %}
