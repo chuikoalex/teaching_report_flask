@@ -5,17 +5,14 @@
 <form action="" method="post" novalidate>
     {{ form.hidden_tag() }}
     <p>
-        {{ form.username.label }}<br>
-        {{ form.username(class="form-control") }}<br>
-        {% for error in form.username.errors %}
-        {% endfor %}
+        {{ form.login.label }}<br>
+        {{ form.login(class="form-control") }}<br>
     </p>
     <p>
         {{ form.password.label }}<br>
         {{ form.password(class="form-control", type="password") }}<br>
-        {% for error in form.password.errors %}
-        {% endfor %}
     </p>
+    <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
     {% for mess in get_flashed_messages() %}
     <div class="alert alert-danger" role="alert">
         {{ mess }}
@@ -24,13 +21,3 @@
     <p>{{ form.submit(type="submit", class="btn btn-primary" ) }}</p>
 </form>
 {% endblock %}
-
-
-<div class="form-floating mb-3">
-    <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
-    <label for="floatingInput">Адрес электронной почты</label>
-  </div>
-  <div class="form-floating">
-    <input type="password" class="form-control" id="floatingPassword" placeholder="Пароль">
-    <label for="floatingPassword">Пароль</label>
-  </div>

@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {% if username %}
-        <h2>Привет, {{ username }}!</h2>
-        <h2>Это твой личный кабинет.</h2>
+    {% if current_user.is_authenticated %}
+        <h2>{{ current_user.name }},</h2>
+        <h2>это ваш личный кабинет.</h2>
     {% else %}
         <h2>Информация не доступна (Вы не авторизованы)</h2>
-        <h2><a class="navbar-brand" href="sign_in.html">Страница авторизации (перейти...)</a></h2>
+        <h2><a class="navbar-brand" href="sign_in">... перейти на страницу авторизации ></a></h2>
     {% endif %}
 {% endblock %}

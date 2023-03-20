@@ -24,7 +24,7 @@
         <nav role="navigation" class="navbar bg-body-tertiary">
             <div class="container-md">
                 <a class="navbar-brand" href="/"><i class="bi bi-list-columns-reverse"></i> Главная</a>
-                {% if username %}
+                {% if current_user.is_authenticated %}
                     <div>
                         <a class="navbar-brand" href="user_page"><i class="bi bi-person-circle"></i> Личный кабинет</a>
                         <a class="navbar-brand" href="exit_lk">Выход <i class="bi bi-box-arrow-right"></i></a>
@@ -32,7 +32,7 @@
                 {% else %}
                 <div>
                     <a class="navbar-brand" href="sign_in">Вход <i class="bi bi-box-arrow-in-left"></i></a>
-                    <a class="navbar-brand" href="#">Регистрация</a>
+                    <a class="navbar-brand" href="register">Регистрация</a>
                 </div>
                 {% endif %}
             </div>
