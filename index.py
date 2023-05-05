@@ -1,13 +1,13 @@
-from flask import Flask, url_for, render_template, request, redirect, flash, session
-from flask_login import LoginManager, login_user, current_user, login_required, logout_user
+from flask import Flask, url_for, render_template, request, redirect, flash
+from flask_login import LoginManager, login_user, current_user, logout_user
 
-from loginform import LoginForm
-from registerform import RegisterForm
-from eventform import EventForm
+from forms.loginform import LoginForm
+from forms.registerform import RegisterForm
+from forms.eventform import EventForm
 from data import db_session
 from data.users import User
 from data.events import Event
-from data.courses import Course
+# from data.courses import Course
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "my mega secret key"
@@ -21,7 +21,7 @@ def index():
         return redirect(url_for('sign_in'))
     db_sess = db_session.create_session()
     data = {"title": "Главная страница",
-            "events": db_sess.query(Event)
+            "events": db_sess.query(Event).order_by(Event.start_date.desc()).all()
             }
     return render_template("index.html", **data)
 
@@ -42,6 +42,12 @@ def sign_in():
             flash("Поля не могут быть пустыми!")
         return redirect(url_for('sign_in'))
     return render_template('sign_in.html', title='Авторизация', form=form)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    db_sess = db_session.create_session()
+    return db_sess.query(User).get(user_id)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -94,6 +100,7 @@ def function():
             if form.date_end.data is not None:
                 event.end_date = form.date_end.data
             event.type_event = form.type_event.data
+            event.level_event = form.level_event.data
             event.members = form.members.data
             event.content = form.content.data
             current_user.events.append(event)
@@ -103,7 +110,7 @@ def function():
             flash("Необходимо заполнить поле Заголовок")
         return redirect('/function')
 
-    data = {"title": "Главная страница",
+    data = {"title": "Функционал",
             "form": form
             }
     return render_template("function.html", **data)
@@ -122,12 +129,10 @@ def load_user(user_id):
 
 
 @app.errorhandler(404)
-def page_not_found(e):
+def page_not_found():
     return render_template('404.html'), 404
 
 
 if __name__ == "__main__":
     db_session.global_init("db/report_tch.db")
     app.run(debug=True)
-
-

@@ -12,6 +12,7 @@ class Event(SqlAlchemyBase):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     title = sqlalchemy.Column(sqlalchemy.String, index=True, nullable=False)
     type_event = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    level_event = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     start_date = sqlalchemy.Column(sqlalchemy.DateTime, index=True, default=datetime.datetime.now)
     end_date = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     members = sqlalchemy.Column(sqlalchemy.Integer, nullable=True)

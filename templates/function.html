@@ -44,6 +44,10 @@
                             {{ form.type_event(class="form-control") }}<br>
                         </p>
                         <p>
+                            {{ form.level_event.label }}<br>
+                            {{ form.level_event(class="form-control") }}<br>
+                        </p>
+                        <p>
                             {{ form.members.label }}<br>
                             {{ form.members(class="form-control") }}<br>
                         </p>
@@ -80,6 +84,7 @@
                         <div class="card-body">
                             <h5 class="card-title">{{item.title}}</h5>
                             <h6 class="card-subtitle mb-2 text-muted"><i class="bi bi-box"></i> {{item.type_event.capitalize()}} -
+                                Уровень: {{item.level_event.capitalize()}} -
                                 <i class="bi bi-calendar3"></i> Дата: {{item.start_date.strftime("%d.%m.%Y г.")}} -
                                 <i class="bi bi-people-fill"></i> Участники: {{item.members}} чел.</h6>
                             <div class="card-body">{{item.content}}</div>
