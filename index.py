@@ -19,6 +19,7 @@ login_manager.init_app(app)
 def index():
     if not current_user.is_authenticated:
         return redirect(url_for('sign_in'))
+
     db_sess = db_session.create_session()
     data = {"title": "Главная страница",
             "events": db_sess.query(Event).order_by(Event.start_date.desc()).all()
@@ -28,6 +29,9 @@ def index():
 
 @app.route('/sign_in', methods=['GET', 'POST'])
 def sign_in():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
     form = LoginForm()
     if request.method == "POST":
         if form.validate_on_submit():
@@ -52,6 +56,9 @@ def load_user(user_id):
 
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
+    if not current_user.is_authenticated:
+        return redirect(url_for('sign_in'))
+
     form = RegisterForm()
     if request.method == "POST":
         if form.validate_on_submit():
@@ -84,6 +91,7 @@ def user_page():
 
 
 @app.route("/function", methods=['GET', 'POST'])
+@login_manager.user_loader
 def function():
     if not current_user.is_authenticated:
         return redirect(url_for('sign_in'))
@@ -111,7 +119,7 @@ def function():
         return redirect('/function')
 
     data = {"title": "Функционал",
-            "form": form
+            "form": form,
             }
     return render_template("function.html", **data)
 

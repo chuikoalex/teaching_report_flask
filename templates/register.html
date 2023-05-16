@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Регистрация пользователя</h1>
+<h1>Зарегистрировать нового пользователя</h1>
     {% if current_user.admin %}
         <form action="" method="post">
             {{ form.hidden_tag() }}
