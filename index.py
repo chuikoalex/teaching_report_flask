@@ -1,5 +1,5 @@
 from flask import Flask, url_for, render_template, request, redirect, flash
-from flask_login import LoginManager, login_user, current_user, logout_user
+from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 
 from forms.loginform import LoginForm
 from forms.registerform import RegisterForm
@@ -13,6 +13,13 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = "my mega secret key"
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = 'sign_in'
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    db_sess = db_session.create_session()
+    return db_sess.query(User).get(user_id)
 
 
 @app.route("/")
@@ -46,12 +53,6 @@ def sign_in():
             flash("Поля не могут быть пустыми!")
         return redirect(url_for('sign_in'))
     return render_template('sign_in.html', title='Авторизация', form=form)
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    db_sess = db_session.create_session()
-    return db_sess.query(User).get(user_id)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -117,9 +118,9 @@ def function():
         else:
             flash("Необходимо заполнить поле Заголовок")
         return redirect('/function')
-
     data = {"title": "Функционал",
             "form": form,
+            "events": db_sess.query(Event).filter(Event.user == current_user).all(),
             }
     return render_template("function.html", **data)
 
@@ -133,7 +134,8 @@ def exit_lk():
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
-    return db_sess.query(User).get(user_id)
+    return db_sess.get(User, user_id)
+    # return db_sess.query(User).get(user_id)
 
 
 @app.errorhandler(404)
