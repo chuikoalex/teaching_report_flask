@@ -57,7 +57,7 @@ def sign_in():
 
 @app.route('/register', methods=['GET', 'POST'])
 def reqister():
-    if not current_user.is_authenticated:
+    if not current_user.is_authenticated or not current_user.admin:
         return redirect(url_for('sign_in'))
 
     form = RegisterForm()
@@ -86,6 +86,7 @@ def reqister():
 
 
 @app.route("/user_page")
+@login_required
 def user_page():
     data = {"title": "Страница пользователя"}
     return render_template("user_page.html", **data)
@@ -135,7 +136,6 @@ def exit_lk():
 def load_user(user_id):
     db_sess = db_session.create_session()
     return db_sess.get(User, user_id)
-    # return db_sess.query(User).get(user_id)
 
 
 @app.errorhandler(404)
