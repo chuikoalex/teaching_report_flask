@@ -28,40 +28,30 @@
                         <p>
                             {{ form.title.label }}<br>
                             {{ form.title(class="form-control") }}<br>
-                        </p>
 
-                        <p>
                             {{ form.date_start.label }}<br>
                             {{ form.date_start(class="form-control") }}<br>
-                        </p>
-                        <p>
+
                             {{ form.date_end.label }}<br>
                             {{ form.date_end(class="form-control") }}<br>
-                        </p>
 
-                        <p>
                             {{ form.type_event.label }}<br>
                             {{ form.type_event(class="form-control") }}<br>
-                        </p>
-                        <p>
+
                             {{ form.level_event.label }}<br>
                             {{ form.level_event(class="form-control") }}<br>
-                        </p>
-                        <p>
+
                             {{ form.members.label }}<br>
                             {{ form.members(class="form-control") }}<br>
-                        </p>
-                        <p>
+
                             {{ form.content.label }}<br>
                             {{ form.content(class="form-control") }}<br>
-
                         </p>
                         {% for mess in get_flashed_messages() %}
                         <div class="alert alert-danger" role="alert">
                             {{ mess }}
                         </div>
                         {% endfor %}
-                        <br>
 
                         <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
                     </form>

@@ -56,7 +56,7 @@ def sign_in():
 
 
 @app.route('/register', methods=['GET', 'POST'])
-def reqister():
+def register():
     if not current_user.is_authenticated or not current_user.admin:
         return redirect(url_for('sign_in'))
 
