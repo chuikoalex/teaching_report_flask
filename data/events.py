@@ -10,7 +10,7 @@ class Event(SqlAlchemyBase):
     __tablename__ = 'events'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    title = sqlalchemy.Column(sqlalchemy.String, index=True, nullable=False)
+    title = sqlalchemy.Column(sqlalchemy.String,  index=True, nullable=False)
     type_event = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     level_event = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     start_date = sqlalchemy.Column(sqlalchemy.DateTime, index=True, default=datetime.datetime.now)

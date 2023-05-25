@@ -1,4 +1,4 @@
-from flask import Flask, url_for, render_template, request, redirect, flash
+from flask import Flask, url_for, render_template, request, redirect, flash, abort
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 
 from forms.loginform import LoginForm
@@ -7,6 +7,7 @@ from forms.eventform import EventForm
 from data import db_session
 from data.users import User
 from data.events import Event
+
 # from data.courses import Course
 
 app = Flask(__name__)
@@ -82,7 +83,10 @@ def register():
             db_sess.commit()
             flash("oK")
             return redirect('/register')
-    return render_template('register.html', title='Регистрация', form=form)
+    data = {"title": "Регистрация",
+            "form": form,
+            }
+    return render_template('register.html', **data)
 
 
 @app.route("/user_page")
@@ -101,7 +105,8 @@ def function():
     db_sess = db_session.create_session()
     form = EventForm()
     if request.method == "POST":
-        if form.title.data != "":
+        if form.title.data.strip() != "":
+            db_sess = db_session.create_session()
             event = Event()
             event.title = form.title.data
             if form.date_start.data is not None:
@@ -116,12 +121,53 @@ def function():
             current_user.events.append(event)
             db_sess.merge(current_user)
             db_sess.commit()
-        else:
-            flash("Необходимо заполнить поле Заголовок")
         return redirect('/function')
     data = {"title": "Функционал",
             "form": form,
             "events": db_sess.query(Event).filter(Event.user == current_user).all(),
+            }
+    return render_template("function.html", **data)
+
+
+@app.route('/function/<int:event_id>', methods=['GET', 'POST'])
+@login_required
+@login_manager.user_loader
+def edit_events(event_id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('sign_in'))
+
+    form = EventForm()
+    db_sess = db_session.create_session()
+    event = db_sess.query(Event).filter(Event.id == event_id, Event.user == current_user).first()
+    if event:
+        if request.method == "GET":
+            form.title.data = event.title
+            form.date_start.data = event.start_date
+            form.date_start.data = event.end_date
+            form.type_event.data = event.type_event
+            form.level_event.data = event.level_event
+            form.members.data = event.members
+            form.content.data = event.content
+            form.submit.label.text = "Изменить"
+        if request.method == "POST":
+            if form.title.data.strip() != "":
+                event.title = form.title.data
+                if form.date_start.data is not None:
+                    event.start_date = form.date_start.data
+                    event.end_date = form.date_start.data
+                if form.date_end.data is not None:
+                    event.end_date = form.date_end.data
+                event.type_event = form.type_event.data
+                event.level_event = form.level_event.data
+                event.members = form.members.data
+                event.content = form.content.data
+                db_sess.commit()
+                return redirect('/function')
+    else:
+        return redirect('/function')
+    data = {"title": "Редактирование мероприятия",
+            "form": form,
+            "events": [event],
             }
     return render_template("function.html", **data)
 

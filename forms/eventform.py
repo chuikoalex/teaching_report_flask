@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired
 
 
 class EventForm(FlaskForm):
-    title = StringField('Заголовок')
+    title = StringField('Заголовок (обязателен для заполнения)', validators=[DataRequired()])
     type_event = SelectField('Тип мероприятия',
                              choices=["Вебинар",
                                       "Выставка",
@@ -37,7 +37,7 @@ class EventForm(FlaskForm):
                            format='%Y-%m-%d')
     date_end = DateField("Дата окончания (если длилось несколько дней)",
                          format='%Y-%m-%d')
-    members = IntegerField('Количество участников')
+    members = IntegerField('Количество участников', default=1)
     content = TextAreaField('Описание мероприятия')
     course_id = SelectField('Курс/объединение')
     submit = SubmitField('Добавить')
