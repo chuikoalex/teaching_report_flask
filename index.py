@@ -124,7 +124,7 @@ def function():
         return redirect('/function')
     data = {"title": "Функционал",
             "form": form,
-            "events": db_sess.query(Event).filter(Event.user == current_user).all(),
+            "events": db_sess.query(Event).filter(Event.user == current_user).order_by(Event.start_date.desc()).all(),
             }
     return render_template("function.html", **data)
 
@@ -170,6 +170,20 @@ def edit_events(event_id):
             "events": [event],
             }
     return render_template("function.html", **data)
+
+
+@app.route('/event_delete/<int:event_id>', methods=['GET', 'POST'])
+@login_required
+def news_delete(event_id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('sign_in'))
+
+    db_sess = db_session.create_session()
+    event = db_sess.query(Event).filter(Event.id == event_id, Event.user == current_user).first()
+    if event:
+        db_sess.delete(event)
+        db_sess.commit()
+    return redirect('/function')
 
 
 @app.route("/exit_lk")
