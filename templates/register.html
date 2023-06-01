@@ -36,7 +36,18 @@
 
             <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
         </form>
-
+        <br>
+        <h4>Текущие пользователи:</h4>
+        {% for user in users %}
+            <div class="card" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title"> Пользователь - <i class="bi bi-person-circle"></i> {{ user.name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted"><i class="bi bi-check-circle"></i> логин - {{ user.login }}</h6>
+                    <p><i class="bi bi-envelope-at"></i> {{ user.email }}</p>
+                </div>
+            </div>
+            <br>
+        {% endfor %}
     {% else %}
         <h2>Информация не доступна</h2>
     {% endif %}

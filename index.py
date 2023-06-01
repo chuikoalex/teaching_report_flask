@@ -61,6 +61,7 @@ def register():
     if not current_user.is_authenticated or not current_user.admin:
         return redirect(url_for('sign_in'))
 
+    db_sess = db_session.create_session()
     form = RegisterForm()
     if request.method == "POST":
         if form.validate_on_submit():
@@ -84,6 +85,7 @@ def register():
             flash("oK")
             return redirect('/register')
     data = {"title": "Регистрация",
+            "users": db_sess.query(User).order_by(User.name).all(),
             "form": form,
             }
     return render_template('register.html', **data)
