@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Добавить новый период</h1>
+    {% if current_user.admin %}
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.title.label }}
+                {{ form.title(class="form-control") }}<br>
+
+                {{ form.date_start.label }}<br>
+                {{ form.date_start(class="form-control") }}<br>
+
+                {{ form.date_end.label }}<br>
+                {{ form.date_end(class="form-control") }}<br>
+            </p>
+
+                {% for mess in get_flashed_messages() %}
+                {% if mess == "oK"%}
+                    <div class="alert alert-success" role="alert">
+                        {{ mess }}
+                    </div>
+                {% else %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ mess }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+        </form>
+
+        <br>
+        <h4>Добавленные периоды:</h4>
+        {% for period in periods %}
+            <div class="card" style="width: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title"> Заголовок - <i class="bi bi-bookmark"></i> {{ period.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted"> 
+                        <i class="bi bi-calendar2-week"></i>
+                        начало - {{ period.start_date.strftime("%d.%m.%Y г.") }}
+                        окончание - {{ period.end_date.strftime("%d.%m.%Y г.") }}
+                    </h6>
+                    <div class="d-flex justify-content-end">
+                        <a href="/period/{{ period.id }}" class="btn btn-outline-success btn-sm">
+                            <i class="bi bi-pencil"></i> редактировать период
+                        </a><pre> </pre> 
+                        <a href="/period_delete/{{ period.id }}" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash3"></i> удалить период
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <br>
+        {% endfor %}
+    {% else %}
+        <h2>Информация не доступна</h2>
+    {% endif %}
+{% endblock %}

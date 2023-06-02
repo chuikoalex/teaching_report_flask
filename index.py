@@ -1,12 +1,17 @@
+import datetime
+
 from flask import Flask, url_for, render_template, request, redirect, flash, abort
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 
 from forms.loginform import LoginForm
 from forms.registerform import RegisterForm
 from forms.eventform import EventForm
+from forms.periodform import PeriodForm
+from forms.filterperiodform import FilterPeriodForm
 from data import db_session
 from data.users import User
 from data.events import Event
+from data.periods import Period
 
 # from data.courses import Course
 
@@ -23,14 +28,70 @@ def load_user(user_id):
     return db_sess.query(User).get(user_id)
 
 
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def index():
     if not current_user.is_authenticated:
         return redirect(url_for('sign_in'))
 
     db_sess = db_session.create_session()
+    form = FilterPeriodForm()
+    now_date = datetime.datetime.now()
+    periods = db_sess.query(Period).order_by(Period.title.desc()).all()
+    form.title.choices = [per.title for per in periods]
+
+    if request.method == "POST":
+        period_filter = db_sess.query(Period).filter(Period.title == form.title.data).first()
+        return redirect(f'/{period_filter.id}')
+
+    period = db_sess.query(Period).filter(Period.start_date <= now_date).filter(Period.end_date > now_date).first()
+    if not period:
+        period = db_sess.query(Period).first()
+    if period:
+        period_title = period.title
+        events = db_sess.query(Event).filter(
+            Event.start_date >= period.start_date).filter(
+            Event.start_date < period.end_date).order_by(
+            Event.start_date.desc()).all()
+    else:
+        period_title = "<ошибка> отсутствуют периоды"
+        events = []
+
     data = {"title": "Главная страница",
-            "events": db_sess.query(Event).order_by(Event.start_date.desc()).all()
+            "period_title": period_title,
+            "form": form,
+            "events": events,
+            }
+    return render_template("index.html", **data)
+
+
+@app.route("/<int:period_id>",  methods=['GET', 'POST'])
+def index_filter(period_id):
+    if not current_user.is_authenticated:
+        return redirect(url_for('sign_in'))
+
+    db_sess = db_session.create_session()
+    form = FilterPeriodForm()
+    periods = db_sess.query(Period).order_by(Period.title.desc()).all()
+
+    form.title.choices = [per.title for per in periods]
+    period = db_sess.query(Period).filter(Period.id == period_id).first()
+
+    if request.method == "POST":
+        period_filter = db_sess.query(Period).filter(Period.title == form.title.data).first()
+        return redirect(f'/{period_filter.id}')
+
+    if not period:
+        redirect("/")
+    period_title = period.title
+    events = db_sess.query(Event).filter(
+        Event.start_date >= period.start_date).filter(
+        Event.start_date < period.end_date).order_by(
+        Event.start_date.desc()).all()
+
+    data = {"title": "Главная страница",
+            "period_title": period_title,
+            "form": form,
+            "events": events,
             }
     return render_template("index.html", **data)
 
@@ -91,6 +152,67 @@ def register():
     return render_template('register.html', **data)
 
 
+@app.route('/period', methods=['GET', 'POST'])
+@app.route('/period/<int:period_id>', methods=['GET', 'POST'])
+def period(period_id=-1):
+    if not current_user.is_authenticated or not current_user.admin:
+        return redirect(url_for('sign_in'))
+
+    db_sess = db_session.create_session()
+    form = PeriodForm()
+
+    if request.method == "GET" and period_id != -1:
+        period = db_sess.query(Period).filter(Period.id == period_id).first()
+        if period:
+            form.title.data = period.title
+            form.date_start.data = period.start_date
+            form.date_end.data = period.end_date
+            form.submit.label.text = "Изменить"
+
+    if request.method == "POST":
+        if form.validate_on_submit():
+            if form.date_start.data is None or form.date_end.data is None:
+                flash("Наличие даты начала и окончания обязательны!")
+                return redirect('/period')
+            if not form.date_start.data < form.date_end.data:
+                flash("Дата начала периода, должна быть меньше!")
+                return redirect('/period')
+            db_sess = db_session.create_session()
+            if period_id == -1:
+                period = Period()
+            else:
+                period = db_sess.query(Period).filter(Period.id == period_id).first()
+            if period:
+                period.title = form.title.data
+                period.start_date = form.date_start.data
+                period.end_date = form.date_end.data
+                if period_id == -1:
+                    db_sess.add(period)
+                db_sess.commit()
+                flash("oK")
+            return redirect('/period')
+
+    data = {"title": "Периоды",
+            "periods": db_sess.query(Period).order_by(Period.start_date.desc()).all(),
+            "form": form,
+            }
+    return render_template('period.html', **data)
+
+
+@app.route('/period_delete/<int:period_id>', methods=['GET', 'POST'])
+@login_required
+def period_delete(period_id):
+    if not current_user.is_authenticated or not current_user.admin:
+        return redirect(url_for('sign_in'))
+
+    db_sess = db_session.create_session()
+    period = db_sess.query(Period).filter(Period.id == period_id).first()
+    if period:
+        db_sess.delete(period)
+        db_sess.commit()
+    return redirect('/period')
+
+
 @app.route("/user_page")
 @login_required
 def user_page():
@@ -145,12 +267,13 @@ def edit_events(event_id):
         if request.method == "GET":
             form.title.data = event.title
             form.date_start.data = event.start_date
-            form.date_start.data = event.end_date
+            form.date_end.data = event.end_date
             form.type_event.data = event.type_event
             form.level_event.data = event.level_event
             form.members.data = event.members
             form.content.data = event.content
             form.submit.label.text = "Изменить"
+
         if request.method == "POST":
             if form.title.data.strip() != "":
                 event.title = form.title.data
@@ -176,7 +299,7 @@ def edit_events(event_id):
 
 @app.route('/event_delete/<int:event_id>', methods=['GET', 'POST'])
 @login_required
-def news_delete(event_id):
+def event_delete(event_id):
     if not current_user.is_authenticated:
         return redirect(url_for('sign_in'))
 

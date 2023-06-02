@@ -1,7 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Мероприятия ОДОД 2022-2023 учебного года.</h1>
+    <h1>{{ period_title }}</h1>
+    <br>
+    <form action="" method="post" class="row g-3">
+        {{ form.hidden_tag() }}
+        <div class="col-auto">{{ form.title.label }}</div>
+        <div class="col-auto">{{ form.title(class="form-control") }}</div>
+        <div class="col-auto">{{ form.submit(type="submit", class="btn btn-outline-primary") }}</div>
+    </form>
+    <br>
     {% for item in events%}
     <div class="card" style="width: 100%;">
         <div class="card-body">
