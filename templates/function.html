@@ -117,11 +117,10 @@
                             {% if current_user.is_authenticated and current_user == item.user %}
                             <div class="d-flex">
                                 <a href="/function/{{ item.id }}" class="btn btn-outline-success btn-sm">
-                                    <i class="bi bi-pencil"></i> Редактирование мероприятия
-                                </a><pre> </pre> 
+                                    <i class="bi bi-pencil"></i> редактирование мероприятия </a>
+                                <pre> </pre> 
                                 <a href="/event_delete/{{ item.id }}" class="btn btn-outline-danger btn-sm">
-                                    <i class="bi bi-trash3"></i> Удалить мероприятие
-                                </a>
+                                    <i class="bi bi-trash3"></i> удалить мероприятие </a>
                             </div>
                             {% endif %}
 
@@ -135,7 +134,7 @@
             {% endif %}
         </div>
     {% else %}
-        <h2>Информация не доступна (Вы не авторизованы)</h2>
+        <h2>Информация недоступна (пользователь не авторизован)</h2>
         <h2><a class="navbar-brand" href="sign_in">... перейти на страницу авторизации ></a></h2>
     {% endif %}
 
