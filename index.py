@@ -1,6 +1,6 @@
 import datetime
 
-from flask import Flask, url_for, render_template, request, redirect, flash, abort
+from flask import Flask, url_for, render_template, request, redirect, flash, send_file
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 
 from forms.loginform import LoginForm
@@ -12,8 +12,10 @@ from data import db_session
 from data.users import User
 from data.events import Event
 from data.periods import Period
-
 # from data.courses import Course
+
+from openpyxl import Workbook
+from tempfile import NamedTemporaryFile
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "my mega secret key"
@@ -94,6 +96,46 @@ def index_filter(period_id):
             "events": events,
             }
     return render_template("index.html", **data)
+
+
+@app.route('/export_to_file/<period_title>')
+def export_to_file(period_title):
+    db_sess = db_session.create_session()
+    period = db_sess.query(Period).filter(Period.title == period_title).first()
+    events = db_sess.query(Event).filter(
+        Event.start_date >= period.start_date).filter(
+        Event.start_date < period.end_date).order_by(
+        Event.start_date.desc()).all()
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Данные"
+    ws['A1'] = period_title
+    ws.append(["Пользователь",
+               "Название",
+               "Тип",
+               "Уровень",
+               "Дата начала",
+               "Дата окончания",
+               "Количество участников",
+               "Описание",
+               ])
+    for event in events:
+        event: Event()
+        user = db_sess.query(User).filter(User.id == event.user_id).first()
+        ws.append([user.name,
+                   event.title,
+                   event.type_event,
+                   event.level_event,
+                   event.start_date,
+                   event.end_date,
+                   event.members,
+                   event.content,
+                   ])
+
+    tmp = NamedTemporaryFile().name
+    wb.save(tmp)
+    return send_file(tmp, as_attachment=True, download_name="export_data.xlsx")
 
 
 @app.route('/sign_in', methods=['GET', 'POST'])
