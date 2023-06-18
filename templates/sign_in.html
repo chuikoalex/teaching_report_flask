@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Войти в систему <i class="bi bi-person-check-fill"></i></h1>
+<form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.login.label }}<br>
+        {{ form.login(class="form-control") }}<br>
+    </p>
+    <p>
+        {{ form.password.label }}<br>
+        {{ form.password(class="form-control", type="password") }}<br>
+    </p>
+    <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+    {% for mess in get_flashed_messages() %}
+    <div class="alert alert-danger" role="alert">
+        {{ mess }}
+    </div>
+    {% endfor %}
+    <p>{{ form.submit(type="submit", class="btn btn-primary" ) }}</p>
+</form>
+{% endblock %}
